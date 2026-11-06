@@ -7,22 +7,20 @@ import argparse
 
 
 
-def listFileExtensions(path, includeHidden):
+def count_extensions(folder: Path, include_hidden: bool) -> Counter[str]:
     suffixList = [] #list where all suffixes get added
 
-    for file in path.iterdir():
-        if file.is_file():
-            if includeHidden and file.name.startswith("."):
-                suffixList.append("hidden")
-            else:
-                if file.name.startswith("."):
-                    continue
-                else:
-                    suffixList.append(file.suffix.lower())
+    for file in folder.iterdir():
+        if not file.is_file():
+            continue
+        if file.name.startswith("."):
+            if not include_hidden:
+                continue
+            suffixList.append("hidden")
+            continue
+        suffixList.append(file.suffix.lower())
 
-
-    counterList = Counter(suffixList)
-    printExtensionList(counterList)
+    return Counter(suffixList)
 
 
 #hidden files erkennen über file.name.startswith(".")
@@ -49,10 +47,9 @@ def main():
 
     includeHidden = args.include_hidden
 
-
-    listFileExtensions(ordnerPath, includeHidden)
+    extension_count = count_extensions(ordnerPath, includeHidden)
     
-
+    printExtensionList(extension_count)
 
 if __name__ == "__main__":
     main()
