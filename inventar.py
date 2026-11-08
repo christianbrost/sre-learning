@@ -3,6 +3,7 @@ from collections import Counter
 import argparse
 
 import logging
+import shutil
 
 logger = logging.getLogger(__name__)
 
