@@ -7,7 +7,7 @@ import shutil
 
 logger = logging.getLogger(__name__)
 
-def count_extensions(folder: Path, include_hidden: bool) -> Counter[str]:
+def list_files(folder: Path, include_hidden: bool) -> list[Path]:
     suffix_list = [] 
 
     for file in folder.iterdir():
@@ -24,7 +24,10 @@ def count_extensions(folder: Path, include_hidden: bool) -> Counter[str]:
         logger.debug("add %s to counter as %s", file.name, file.suffix if file.suffix != "" else "(no extension)")
         suffix_list.append(file.suffix.lower())
 
-    return Counter(suffix_list)
+    return suffix_list
+
+def count_extensions(files: list[Path]) -> Counter[str]:
+    return Counter(files)
 
 def print_extension_list(extension_list_counter):
     for value, count in extension_list_counter.most_common():
@@ -55,7 +58,7 @@ def main():
     
     logger.info("folder added: '%s'", ordner_path)
 
-    extension_count = count_extensions(ordner_path, args.include_hidden)
+    extension_count = count_extensions(list_files(ordner_path, args.include_hidden))
 
     list_length = sum(extension_count.values())
 
