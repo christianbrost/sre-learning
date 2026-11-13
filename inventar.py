@@ -3,12 +3,11 @@ from collections import Counter
 import argparse
 
 import logging
-import shutil
 
 logger = logging.getLogger(__name__)
 
 def list_files(folder: Path, include_hidden: bool) -> list[Path]:
-    suffix_list = [] 
+    files = [] 
 
     for file in folder.iterdir():
         if not file.is_file():
@@ -18,16 +17,24 @@ def list_files(folder: Path, include_hidden: bool) -> list[Path]:
             if not include_hidden:
                 logger.debug("skip hidden file %s", file.name)
                 continue
-            suffix_list.append("hidden")
+            files.append(file)
             logger.debug("appended hidden file %s", file.name)
             continue
-        logger.debug("add %s to counter as %s", file.name, file.suffix if file.suffix != "" else "(no extension)")
-        suffix_list.append(file.suffix.lower())
+        logger.debug("adding file %s to file_list", file.name)
+        files.append(file)
 
-    return suffix_list
+    return files
 
 def count_extensions(files: list[Path]) -> Counter[str]:
-    return Counter(files)
+    extension_list = []
+
+    for file in files:
+        if file.name.startswith("."):
+            extension_list.append("hidden")
+            continue
+        extension_list.append(file.suffix.lower())
+
+    return Counter(extension_list)
 
 def print_extension_list(extension_list_counter):
     for value, count in extension_list_counter.most_common():
